@@ -1,0 +1,25 @@
+version: "3.3"
+services:
+    pihole:
+        image: pihole/pihole:2025.04.0
+        container_name: pihole
+        restart: unless-stopped
+        volumes:
+            - "pihole-etc:/etc/pihole/"
+            - "pihole-etc-dnsmasq.d:/etc/dnsmasq.d/"
+        environment:
+            - TZ=Europe/Paris
+            #- ServerIP=10.0.100.2
+            - FTLCONF_webserver_interface_theme=default-dark
+            - FTLCONF_dns_interface=eth0@if13
+            - FTLCONF_webserver_port=8888
+        cap_add:
+            - NET_ADMIN
+        network_mode: host
+volumes:
+    pihole-etc:
+        external: true
+    pihole-etc-dnsmasq.d:
+            external: true
+
+

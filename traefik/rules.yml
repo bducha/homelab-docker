@@ -1,0 +1,75 @@
+http:
+  routers:
+    pihole:
+      rule: "Host(`pihole.int.bend.ovh`)"
+      service: pihole
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: le
+    hyperion:
+      rule: "Host(`hyperion.int.bend.ovh`)"
+      service: hyperion
+      entryPoints:
+        - websecure
+      tls:
+        certResolver: le
+    octoprint:
+      rule: "Host(`octoprint.int.bend.ovh`)"
+      service: octoprint
+      entrypoints:
+        - websecure
+      tls:
+        certResolver: le
+    jellyfin:
+      rule: "Host(`jellyfin.int.bend.ovh`)"
+      service: jellyfin
+      entrypoints:
+        - websecure
+      tls:
+        certResolver: le
+    proxmox:
+      rule: "Host(`prox.int.bend.ovh`)"
+      service: proxmox
+      entrypoints:
+        - websecure
+      tls:
+        certResolver: le
+    # portainer:
+    #   rule: "Host(`portainer.int.bend.ovh`)"
+    #   service: portainer
+    #   entrypoints:
+    #     - websecure
+    #   tls:
+    #     certResolver: le
+  services:
+    # portainer:
+    #   loadBalancer:
+    #     serversTransport: insecure
+    #     servers:
+    #       - url: "https://10.0.100.2:9443/"
+    proxmox:
+      loadBalancer:
+        serversTransport: insecure
+        servers:
+          - url: "https://10.0.1.1:8006"
+    jellyfin:
+      loadBalancer:
+        servers:
+          - url: "http://10.0.100.2:8096"
+    pihole:
+      loadBalancer:
+        servers:
+          - url: "http://10.0.100.2:8888"
+    hyperion:
+      loadBalancer:
+        servers:
+          - url: "http://10.0.100.2:8090"
+    octoprint:
+      loadbalancer:
+        servers:
+          - url: "http://10.0.1.2:8020"
+
+  serversTransports:
+    insecure:
+      insecureSkipVerify: true

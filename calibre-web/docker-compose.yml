@@ -1,0 +1,36 @@
+services:
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
+    volumes:
+      - ./config:/config
+      - ./books:/books
+    ports:
+      - 8083:8083
+    labels:
+      - "traefik.http.routers.calibre.rule=Host(`calibre.int.bend.ovh`)"
+      - "traefik.http.services.calibre.loadbalancer.server.port=8083"
+      - "traefik.http.routers.calibre.tls.certresolver=le"
+      - "traefik.http.middlewares.kobo-sync-headers.headers.customrequestheaders.X-Scheme=https"
+      - "traefik.http.middlewares.kobo-sync-headers.headers.browserXssFilter=true"
+      - "traefik.http.middlewares.kobo-sync-headers.headers.contentTypeNosniff=true"
+      - "traefik.http.middlewares.kobo-sync-headers.headers.frameDeny=true"
+      - "traefik.http.middlewares.kobo-sync-headers.headers.sslRedirect=true"
+      - "traefik.http.middlewares.kobo-sync-headers.headers.stsIncludeSubdomains=true"
+      - "traefik.http.middlewares.kobo-sync-headers.headers.stsPreload=true"
+      - "traefik.http.middlewares.kobo-sync-headers.headers.stsSeconds=31536000"
+      - "traefik.http.middlewares.kobo-sync-headers.headers.customFrameOptionsValue=SAMEORIGIN"
+      - 'traefik.http.routers.calibre.middlewares=kobo-sync-headers'
+      - "traefik.http.routers.calibre.tls=true"
+      - "traefik.http.routers.calibre.entrypoints=websecure"
+    networks:
+      - traefik_web
+    restart: unless-stopped
+networks:
+  traefik_web:
+    external: true

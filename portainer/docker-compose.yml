@@ -1,0 +1,24 @@
+version: "3.3"
+
+services:
+  portainer:
+    image: portainer/portainer-ce:2.28.1
+    command: -H unix:///var/run/docker.sock
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`portainer.int.bend.ovh`)"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
+      - "traefik.http.routers.portainer.tls.certresolver=le"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+    networks:
+      - traefik_web
+volumes:
+  portainer_data:
+    external: true
+networks:
+  traefik_web:
+    external: true

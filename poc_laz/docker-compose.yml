@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  terrain-worker:
+    build: .
+    volumes:
+      - ./app:/app
+    environment:
+      - INPUT_FILE=/app/input.laz
+      - OUTPUT_FILE=/app/terrain.fbx

@@ -1,0 +1,25 @@
+version: '3'
+services:
+  esphome:
+    container_name: esphome
+    image: esphome/esphome:2023.10
+    volumes:
+      - ./config:/config
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - ESPHOME_DASHBOARD_USE_PING=true
+      - ESPHOME_DASHBOARD_ADDRESS=esphome.int.bend.ovh
+    command: dashboard /config
+    restart: always
+    privileged: true
+    labels:
+      - "traefik.http.routers.esphome.rule=Host(`esphome.int.bend.ovh`)"
+      - "traefik.http.services.esphome.loadbalancer.server.port=6052"
+      - "traefik.http.routers.esphome.tls.certresolver=le"
+      - "traefik.http.routers.esphome.entrypoints=websecure"
+    networks:
+      - traefik_web
+networks:
+  traefik_web:
+    external: true
+

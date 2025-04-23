@@ -1,0 +1,139 @@
+pageInfo:
+  title: Homelab
+sections:
+  - name: Favs
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+    items:
+      - title: Youtube
+        icon: favicon
+        url: https://www.youtube.com/
+        id: 0_400_youtube
+      - title: Reddit
+        icon: favicon
+        url: https://www.reddit.com/
+        id: 1_400_reddit
+      - title: Messenger
+        icon: favicon
+        url: https://www.messenger.com/
+        id: 2_400_messenger
+      - title: Telegram
+        icon: favicon
+        url: https://web.telegram.org/k/
+        id: 3_400_telegram
+  - name: Homelab
+    items:
+      - title: Home Assistant
+        icon: >-
+          https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Home_Assistant_Logo.svg/1024px-Home_Assistant_Logo.svg.png
+        url: https://hass.lt.bend.ovh
+        target: newtab
+        statusCheck: true
+        id: 0_728_homeassistant
+      - title: Portainer
+        icon: https://cdn.worldvectorlogo.com/logos/portainer.svg
+        url: https://portainer.int.bend.ovh
+        statusCheck: true
+        id: 1_728_portainer
+      - title: Traefik
+        icon: >-
+          https://raw.githubusercontent.com/docker-library/docs/a6cc2c5f4bc6658168f2a0abbb0307acaefff80e/traefik/logo.png
+        url: https://traefik.int.bend.ovh
+        statusCheck: true
+        statusCheckAcceptCodes: '401'
+        id: 2_728_traefik
+      - title: Pihole
+        icon: >-
+          https://upload.wikimedia.org/wikipedia/commons/0/00/Pi-hole_Logo.png?20180925041558
+        url: https://pihole.int.bend.ovh/admin
+        id: 3_728_pihole
+      - title: Jellyfin
+        icon: hl-jellyfin
+        url: https://jellyfin.int.bend.ovh
+        id: 6_728_jellyfin
+      - title: Sonarr
+        icon: hl-sonarr
+        url: https://sonarr.int.bend.ovh
+        id: 7_728_sonarr
+      - title: Radarr
+        icon: hl-radarr
+        url: https://radarr.int.bend.ovh
+        id: 8_728_radarr
+      - title: Octoprint
+        icon: https://octoprint.org/assets/img/logo.png
+        url: https://octoprint.int.bend.ovh
+        target: newtab
+        statusCheck: true
+        id: 9_728_octoprint
+      - title: Transmission
+        icon: >-
+          https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Transmission_Icon.svg/2048px-Transmission_Icon.svg.png
+        url: https://transmission.int.bend.ovh
+        target: newtab
+        statusCheck: true
+        id: 10_728_transmission
+      - title: Jackett
+        icon: >-
+          https://user-images.githubusercontent.com/27040483/28728094-99f3e3f6-73c7-11e7-8f8d-28912dc6ac0d.png
+        url: https://jackett.int.bend.ovh
+        id: 12_728_jackett
+      - title: Proxmox
+        url: https://prox.int.bend.ovh
+        statusCheck: true
+        id: 13_728_proxmox
+      - title: Argus
+        icon: favicon
+        url: https://argus.int.bend.ovh
+        target: newtab
+        id: 14_728_argus
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+appConfig:
+  theme: argon
+  language: fr
+  layout: horizontal
+  iconSize: large
+  startingView: default
+  defaultOpeningMethod: newtab
+  statusCheck: true
+  statusCheckInterval: 30
+  faviconApi: google
+  routingMode: history
+  enableMultiTasking: false
+  widgetsAlwaysUseProxy: false
+  webSearch:
+    disableWebSearch: false
+    searchEngine: duckduckgo
+    openingMethod: newtab
+    searchBangs: {}
+  enableFontAwesome: true
+  enableMaterialDesignIcons: false
+  hideComponents:
+    hideHeading: false
+    hideNav: false
+    hideSearch: false
+    hideSettings: false
+    hideFooter: false
+  auth:
+    enableGuestAccess: false
+    users: []
+    enableKeycloak: false
+  showSplashScreen: false
+  preventWriteToDisk: false
+  preventLocalSave: false
+  disableConfiguration: false
+  allowConfigEdit: true
+  enableServiceWorker: true
+  disableContextMenu: false
+  disableUpdateChecks: false
+  disableSmartSort: false
+  enableErrorReporting: false
+  disableConfigurationForNonAdmin: false

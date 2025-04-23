@@ -1,0 +1,39 @@
+services:
+  kopia:
+      image: kopia/kopia:latest
+      container_name: kopia
+      hostname: kopia
+      restart: "unless-stopped"
+      user: "1000:1000"
+      ports:
+        - 51515:51515
+      command:
+        - server
+        - start
+        - --disable-csrf-token-checks
+        - --insecure
+        - --address=0.0.0.0:51515
+        - --server-username=${USERNAME}
+        - --server-password=${PASSWORD}
+      volumes:
+        - ./mnt/kopia:/tmp/shared
+        - ./config:/app/config
+        - ./cache:/app/cache
+        - ./logs:/app/logs
+        - /:/data:ro
+      labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kopia.rule=Host(`kopia.int.bend.ovh`)"
+      - "traefik.http.services.kopia.loadbalancer.server.port=51515"
+      - "traefik.http.routers.kopia.tls.certresolver=le"
+      - "traefik.http.routers.kopia.entrypoints=websecure"
+      networks:
+        - traefik_web
+      environment:
+        KOPIA_PASSWORD: ${PASSWORD}
+        TZ: Europe/Paris
+        USER: ben
+networks:
+  traefik_web:
+    external: true
+      

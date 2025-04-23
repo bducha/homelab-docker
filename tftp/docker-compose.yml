@@ -1,0 +1,11 @@
+version: "3.7"
+
+services:
+  tftp:
+    image: pghalliday/tftp:latest
+    container_name: tftp
+    network_mode: host
+    volumes:
+      - ./data:/var/tftpboot
+    restart: always
+

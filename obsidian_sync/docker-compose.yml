@@ -1,0 +1,34 @@
+version: '3.3'
+services:
+  couchdb:
+    image: couchdb:latest
+    container_name: obsidian
+    user: 1000:1000
+    environment:
+      - COUCHDB_USER=${COUCHDB_USER}
+      - COUCHDB_PASSWORD=${COUCHDB_PASSWORD}
+    volumes:
+      - ./data:/opt/couchdb/data
+      - ./local.ini:/opt/couchdb/etc/local.ini
+    restart: unless-stopped
+    networks:
+      - traefik_web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.obsidian.rule=Host(`obsidian.int.bend.ovh`)"
+      # The 'websecure' entryPoint is basically your HTTPS entrypoint. Check the next code snippet if you are encountering problems only; you probably have a working traefik configuration if this is not your first container you are reverse proxying.
+      - "traefik.http.routers.obsidian.entrypoints=websecure"
+      - "traefik.http.services.obsidian.loadbalancer.server.port=5984"
+      - "traefik.http.routers.obsidian.tls.certresolver=le"
+      - "traefik.http.routers.obsidian.middlewares=obsidiancors"
+      # The part needed for CORS to work on Traefik 2.x starts here
+      - "traefik.http.middlewares.obsidiancors.headers.accesscontrolallowmethods=GET,PUT,POST,HEAD,DELETE"
+      - "traefik.http.middlewares.obsidiancors.headers.accesscontrolallowheaders=accept,authorization,content-type,origin,referer"
+      - "traefik.http.middlewares.obsidiancors.headers.accesscontrolalloworiginlist=app://obsidian.md,capacitor://localhost,http://localhost"
+      - "traefik.http.middlewares.obsidiancors.headers.accesscontrolmaxage=3600"
+      - "traefik.http.middlewares.obsidiancors.headers.addvaryheader=true"
+      - "traefik.http.middlewares.obsidiancors.headers.accessControlAllowCredentials=true"
+
+networks:
+  traefik_web:
+    external: true

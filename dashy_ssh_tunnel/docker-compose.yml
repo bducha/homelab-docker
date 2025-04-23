@@ -1,0 +1,8 @@
+version: "3.3"
+services:
+    dashy-ssh-tunnel:
+        container_name: dashy_ssh_tunnel
+        image: dashy_ssh_tunnel
+        command: ssh -i /ssh/id_rsa -o StrictHostKeyChecking=no -p 2222 -R dash:80:localhost:10810 lt.bend.ovh
+        restart: always
+        network_mode: host

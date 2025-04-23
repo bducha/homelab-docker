@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  dashy:
+    image: lissy93/dashy:latest
+    container_name: dashy
+    volumes:
+      - ./conf.yml:/app/user-data/conf.yml
+    environment:
+      - NODE_ENV=production
+        #- BASE_URL=https://dash.lt.bend.ovh
+      - VUE_APP_DOMAIN=https://dash.lt.bend.ovh
+    restart: unless-stopped
+    networks:
+      - traefik_web
+    ports:
+      - 10810:8080
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+        #labels:
+      #- "traefik.http.routers.dashy.rule=Host(`dash.int.bend.ovh`)"
+      #- "traefik.http.routers.dashy.tls.certresolver=le"
+      #- "traefik.http.routers.dashy.entrypoints=websecure"
+      #- "traefik.docker.network=traefik_web"
+    healthcheck:
+      test: ['CMD', 'node', '/app/services/healthcheck']
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+networks:
+  traefik_web:
+    external: true

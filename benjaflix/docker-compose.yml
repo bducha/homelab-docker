@@ -1,0 +1,149 @@
+version: "3.0"
+services:
+  jackett:
+    container_name: jackett
+    image: linuxserver/jackett:0.22.1756
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+        - ./config/jackett:/config
+    labels:
+      - "traefik.http.routers.jackett.rule=Host(`jackett.int.bend.ovh`)"
+      - "traefik.http.services.jackett.loadbalancer.server.port=9117"
+      - "traefik.http.routers.jackett.tls.certresolver=le"
+      - "traefik.http.routers.jackett.entrypoints=websecure"
+    networks:
+      - traefik_web
+    restart: unless-stopped
+
+  transmission:
+    image: haugene/transmission-openvpn:5.3
+    container_name: transmission
+    volumes:
+        - /mnt/sdb1:/mnt/data
+        - ./transmission_config:/config
+    environment:
+        - PUID=1000
+        - PGID=1000
+        - CREATE_TUN_DEVICE=true
+        - OPENVPN_PROVIDER=${OPENVPN_PROVIDER}
+        - OPENVPN_CONFIG=${OPENVPN_CONFIG}
+        - OPENVPN_USERNAME=${OPENVPN_USERNAME}
+        - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+        - OPENVPN_OPTS=--pull-filter ignore ifconfig-ipv6 --pull-filter ignore route-ipv6
+        - WEBPROXY_ENABLED=false
+        - TRANSMISSION_DOWNLOAD_DIR=/mnt/data/downloads
+        - TRANSMISSION_IDLE_SEEDING_LIMIT_ENABLED=true
+        - TRANSMISSION_SEED_QUEUE_ENABLED=true
+        - TRANSMISSION_INCOMPLETE_DIR_ENABLED=false
+        - LOCAL_NETWORK=10.0.0.0/16
+        - DEBUG=true
+    cap_add:
+        - NET_ADMIN
+    logging:
+        driver: json-file
+        options:
+            max-size: 10m
+    labels:
+      - "traefik.http.routers.transmission.rule=Host(`transmission.int.bend.ovh`)"
+      - "traefik.http.services.transmission.loadbalancer.server.port=9091"
+      - "traefik.http.routers.transmission.tls.certresolver=le"
+      - "traefik.http.routers.transmission.entrypoints=websecure"
+    networks:
+      - traefik_web
+    restart: unless-stopped
+  sonarr:
+    image: linuxserver/sonarr:4.0.14
+    container_name: sonarr
+    environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=Europe/Paris
+    volumes:
+        - ./config/sonarr:/config
+        - /mnt/sdb1:/mnt/data
+    labels:
+      - "traefik.http.routers.sonarr.rule=Host(`sonarr.int.bend.ovh`)"
+      - "traefik.http.services.sonarr.loadbalancer.server.port=8989"
+      - "traefik.http.routers.sonarr.tls.certresolver=le"
+      - "traefik.http.routers.sonarr.entrypoints=websecure"
+    networks:
+      - traefik_web
+    depends_on:
+        - jackett
+        - transmission
+    restart: unless-stopped
+  radarr:
+    image: linuxserver/radarr:5.21.1
+    container_name: radarr
+    hostname: radarr
+    environment:
+        - PUID=1000
+        - PGID=1000
+        - TZ=Europe/Paris
+    volumes:
+        - ./config/radarr:/config
+        - /mnt/sdb1:/mnt/data
+    labels:
+      - "traefik.http.routers.radarr.rule=Host(`radarr.int.bend.ovh`)"
+      - "traefik.http.services.radarr.loadbalancer.server.port=7878"
+      - "traefik.http.routers.radarr.tls.certresolver=le"
+      - "traefik.http.routers.radarr.entrypoints=websecure"
+    networks:
+      - traefik_web
+    depends_on:
+        - jackett
+        - transmission
+    restart: unless-stopped
+  readarr:
+    image: linuxserver/readarr:develop
+    container_name: readarr
+    hostname: readarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+    volumes:
+      - ./config/readarr:/config
+      - /mnt/sdb1:/mnt/data
+      - /mnt/sdb1/media/books:/books
+    labels:
+      - "traefik.http.routers.readarr.rule=Host(`readarr.int.bend.ovh`)"
+      - "traefik.http.services.readarr.loadbalancer.server.port=8787"
+      - "traefik.http.routers.readarr.tls.certresolver=le"
+      - "traefik.http.routers.readarr.entrypoints=websecure"
+    
+    networks:
+      - traefik_web
+    depends_on:
+      - jackett
+      - transmission
+    restart: unless-stopped
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:10.10.7
+    group_add:
+      - "109" 
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Paris
+      - JELLYFIN_PublishedServerUrl=https://jellyfin.int.bend.ovh #optional
+    volumes:
+      - ./config/jellyfin:/config
+      - ./cache:/cache
+      - /mnt/sdb1/media/tv:/data/tvshows
+      - /mnt/sdb1/media/movies:/data/movies
+    network_mode: 'host'
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+        #devices:
+      #- /dev/dri/renderD128:/dev/dri/renderD128
+      #- /dev/dri/card0:/dev/dri/card0
+
+networks:
+  traefik_web:
+    external: true

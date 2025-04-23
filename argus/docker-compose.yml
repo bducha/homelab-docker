@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  argus:
+    container_name: argus
+    image: releaseargus/argus:0.24.0
+    volumes:
+      - ./config.yml:/app/config.yml
+      - ./data/:/app/data/ # argus.db
+    environment:
+      ARGUS_UID: 1000 # Optional UID override
+      ARGUS_GID: 1000 # Optional GID override
+    labels:
+      - "traefik.http.routers.argus.rule=Host(`argus.int.bend.ovh`)"
+      - "traefik.http.services.argus.loadbalancer.server.port=8080"
+      - "traefik.http.routers.argus.tls.certresolver=le"
+      - "traefik.http.routers.argus.entrypoints=websecure"
+    healthcheck: # Optional healthcheck
+      test: ["CMD", "/healthcheck", "https://argus.int.bend.ovh/api/v1/healthcheck"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - traefik_web
+
+networks:
+  traefik_web:
+    external: true
